@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Una fila de la pagina: texto normal, encabezado o enlace -->
+<component name="LineItem" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="refresh" />
+        <field id="itemHasFocus" type="boolean" onChange="refresh" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/LineItem.brs" />
+    <children>
+        <Label id="text" translation="[12,0]" width="1156" height="34" vertAlign="center" />
+    </children>
+</component>

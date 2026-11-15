@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Hilo de trabajo: descarga paginas, las convierte a lineas y maneja los favoritos -->
+<component name="BrowserTask" extends="Task">
+    <interface>
+        <!-- entrada -->
+        <field id="action" type="string" value="load" />
+        <field id="input" type="string" />
+        <field id="pageTitle" type="string" />
+        <field id="inlineLinks" type="boolean" value="true" />
+        <!-- salida: content se asigna primero, result al final -->
+        <field id="content" type="node" />
+        <field id="result" type="assocarray" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/HtmlParser.brs" />
+    <script type="text/brightscript" uri="pkg:/components/BrowserTask.brs" />
+</component>

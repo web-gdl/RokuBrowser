@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+    <children>
+        <!-- Encabezado: titulo de la pagina y direccion -->
+        <Rectangle width="1280" height="98" color="0x1B2838FF" />
+        <Label id="title" translation="[64,28]" width="1152" height="32" color="0xFFFFFFFF">
+            <Font role="font" uri="font:BoldSystemFontFile" size="24" />
+        </Label>
+        <Label id="url" translation="[64,62]" width="800" height="24" color="0x8FA3B8FF">
+            <Font role="font" uri="font:SystemFontFile" size="18" />
+        </Label>
+        <Label id="status" translation="[876,62]" width="340" height="24" horizAlign="right" color="0xFFD166FF">
+            <Font role="font" uri="font:SystemFontFile" size="18" />
+        </Label>
+
+        <!-- Contenido de la pagina, una fila por linea -->
+        <MarkupList
+            id="list"
+            translation="[50,104]"
+            itemComponentName="LineItem"
+            itemSize="[1180,34]"
+            numRows="16"
+            vertFocusAnimationStyle="floatingFocus"
+            focusBitmapUri="pkg:/images/focus.png" />
+
+        <!-- Pie con los controles -->
+        <Rectangle translation="[0,652]" width="1280" height="68" color="0x1B2838FF" />
+        <Label id="hints" translation="[64,659]" width="1152" height="24" color="0x8FA3B8FF"
+            text="OK: abrir enlace   |   Izq/Der: saltar entre enlaces   |   Rew/FF: página   |   Play: dirección   |   * : menú   |   Back: atrás">
+            <Font role="font" uri="font:SystemFontFile" size="17" />
+        </Label>
+
+        <!-- Aviso de carga -->
+        <Group id="loading" visible="false">
+            <Rectangle translation="[440,306]" width="400" height="96" color="0x000000E6" />
+            <Label translation="[440,306]" width="400" height="96" horizAlign="center" vertAlign="center"
+                color="0xFFFFFFFF" text="Cargando...">
+                <Font role="font" uri="font:BoldSystemFontFile" size="26" />
+            </Label>
+        </Group>
+
+        <Timer id="statusTimer" duration="4" repeat="false" />
+    </children>
+</component>
