@@ -2,7 +2,7 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/); versiones con [SemVer](https://semver.org/lang/es/).
 
-## [1.0.0] - 2026-11-15
+## 1.0.0 - 2026-11-15
 
 Primera versión.
 
@@ -20,5 +20,3 @@ Primera versión.
 - El código pasa la validación de BrighterScript sin errores.
 - El analizador HTML se probó con el intérprete `brs` (casos difíciles y una página de 4,000 párrafos).
 - Pendiente: confirmar el funcionamiento en televisores reales.
-
-[1.0.0]: https://github.com/web-gdl/RokuBrowser/tree/v1.0.0
