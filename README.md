@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/web-gdl/RokuBrowser/releases/latest/download/NavegadorWebRoku.zip"><b>⬇️ Descargar NavegadorWebRoku.zip</b></a>
+  <a href="https://github.com/web-gdl/RokuBrowser/raw/main/download/NavegadorWebRoku.zip"><b>⬇️ Descargar NavegadorWebRoku.zip</b></a>
   &nbsp;·&nbsp;
   <a href="docs/INSTALACION.md">Instalación</a>
   &nbsp;·&nbsp;
@@ -55,7 +55,7 @@ Si una página no tiene texto legible, el navegador lo avisa y ofrece volver al 
 </p>
 
 1. **Activa el modo desarrollador** en tu Roku: en el control pulsa `Inicio ×3, Arriba ×2, Derecha, Izquierda, Derecha, Izquierda, Derecha`. Anota la dirección IP que aparece y crea una contraseña.
-2. **Descarga** [`NavegadorWebRoku.zip`](https://github.com/web-gdl/RokuBrowser/releases/latest/download/NavegadorWebRoku.zip). No lo descomprimas.
+2. **Descarga** [`NavegadorWebRoku.zip`](https://github.com/web-gdl/RokuBrowser/raw/main/download/NavegadorWebRoku.zip). No lo descomprimas.
 3. En una computadora conectada a la misma red, abre `http://IP-DE-TU-ROKU`, entra con el usuario `rokudev` y tu contraseña, pulsa **Upload**, elige el ZIP y luego **Install with zip**.
 
 Guía completa, con solución de problemas: [docs/INSTALACION.md](docs/INSTALACION.md).
@@ -98,11 +98,13 @@ RokuBrowser/
 │   │   ├── HtmlParser.brs        HTML → líneas de texto y enlaces
 │   │   └── LineItem.xml/.brs     Una fila de la lista
 │   └── images/               Icono, splash y foco
+├── download/                 NavegadorWebRoku.zip listo para instalar
 ├── docs/                     Documentación e imágenes
 ├── tools/
-│   ├── build.sh              Genera dist/NavegadorWebRoku.zip
+│   ├── build.sh              Genera el ZIP
 │   ├── make_images.py        Genera iconos e imágenes de la documentación
 │   └── test/                 Prueba del analizador HTML
+├── .github/workflows/        Publica la release al subir una etiqueta v*
 ├── bsconfig.json             Configuración de BrighterScript (validación)
 └── package.json
 ```
@@ -113,7 +115,7 @@ RokuBrowser/
 npm install          # instala BrighterScript y el intérprete brs
 npm run lint         # valida todo el código BrightScript
 npm test             # prueba el analizador HTML con una página de ejemplo
-npm run build        # crea dist/NavegadorWebRoku.zip
+npm run build        # crea download/NavegadorWebRoku.zip
 ```
 
 Guía para desarrolladores: [docs/DESARROLLO.md](docs/DESARROLLO.md).

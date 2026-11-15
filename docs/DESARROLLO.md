@@ -21,19 +21,19 @@ npm install
 |---|---|
 | `npm run lint` | Valida todo el BrightScript y los XML con BrighterScript |
 | `npm test` | Ejecuta `tools/test/test.brs` con el intérprete `brs`: analiza `sample.html` e imprime las líneas |
-| `npm run build` | Genera `dist/NavegadorWebRoku.zip` con el contenido de `app/` |
+| `npm run build` | Genera `download/NavegadorWebRoku.zip` con el contenido de `app/` (este archivo se sube al repositorio) |
 | `npm run images` | Regenera iconos, splash e imágenes de la documentación |
 
 En Windows sin `bash`, empaqueta con PowerShell:
 
 ```powershell
-Compress-Archive -Path app\* -DestinationPath dist\NavegadorWebRoku.zip -Force
+Compress-Archive -Path app\* -DestinationPath download\NavegadorWebRoku.zip -Force
 ```
 
 ## Instalar mientras desarrollas
 
 1. Ejecuta `npm run build`.
-2. Sube `dist/NavegadorWebRoku.zip` en `http://IP-DE-TU-ROKU` → **Upload** → **Install with zip**.
+2. Sube `download/NavegadorWebRoku.zip` en `http://IP-DE-TU-ROKU` → **Upload** → **Install with zip**.
 3. Abre la consola: `telnet IP-DE-TU-ROKU 8085`.
 
 Con la extensión de VS Code puedes hacerlo todo con **F5** creando `.vscode/launch.json`:
@@ -74,8 +74,15 @@ Para probar una página real, guárdala como `tools/test/sample.html` y vuelve a
 
 1. Sube `build_version` (y `minor_version` o `major_version` si corresponde) en `app/manifest`.
 2. Actualiza `CHANGELOG.md`.
-3. `npm run build`.
-4. Crea una *release* en GitHub con la etiqueta `vX.Y.Z` y adjunta `dist/NavegadorWebRoku.zip` con ese nombre exacto. Así el enlace `releases/latest/download/NavegadorWebRoku.zip` siempre apunta a la última versión.
+3. `npm run build` y confirma el nuevo `download/NavegadorWebRoku.zip` junto con el código. El enlace de descarga del README apunta a ese archivo en `main`, así que siempre entrega la última versión.
+4. Opcional: crea la etiqueta y súbela para que GitHub Actions publique la *release* con el ZIP adjunto ([`.github/workflows/release.yml`](../.github/workflows/release.yml)):
+
+   ```bash
+   git tag v1.0.1
+   git push origin v1.0.1
+   ```
+
+   Requiere que Actions tenga permiso de escritura (Settings → Actions → General → *Workflow permissions* → *Read and write*).
 
 ## Ideas para siguientes versiones
 

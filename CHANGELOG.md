@@ -21,4 +21,4 @@ Primera versión.
 - El analizador HTML se probó con el intérprete `brs` (casos difíciles y una página de 4,000 párrafos).
 - Pendiente: confirmar el funcionamiento en televisores reales.
 
-[1.0.0]: https://github.com/web-gdl/RokuBrowser/releases/tag/v1.0.0
+[1.0.0]: https://github.com/web-gdl/RokuBrowser/tree/v1.0.0

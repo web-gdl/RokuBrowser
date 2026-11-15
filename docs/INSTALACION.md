@@ -8,7 +8,7 @@
 
 - Un televisor o reproductor Roku conectado a internet.
 - Una computadora (Windows, macOS o Linux) **en la misma red** que el Roku.
-- El archivo [`NavegadorWebRoku.zip`](https://github.com/web-gdl/RokuBrowser/releases/latest/download/NavegadorWebRoku.zip).
+- El archivo [`NavegadorWebRoku.zip`](https://github.com/web-gdl/RokuBrowser/raw/main/download/NavegadorWebRoku.zip).
 
 ## 1. Activar el modo desarrollador
 
@@ -33,7 +33,7 @@ Si ya activaste el modo desarrollador antes, puedes saltar este paso.
 
 ## 3. Instalar el ZIP
 
-1. Descarga [`NavegadorWebRoku.zip`](https://github.com/web-gdl/RokuBrowser/releases/latest/download/NavegadorWebRoku.zip). **No lo descomprimas.**
+1. Descarga [`NavegadorWebRoku.zip`](https://github.com/web-gdl/RokuBrowser/raw/main/download/NavegadorWebRoku.zip). **No lo descomprimas.**
 2. Pulsa **Upload** y elige el archivo.
 3. Pulsa **Install with zip**.
 4. La página mostrará `Install Success` y la app se abrirá sola en la TV.
@@ -54,7 +54,7 @@ En el instalador web pulsa **Delete**. También se borra al desactivar el modo d
 |---|---|
 | La página del instalador no abre | Comprueba que la computadora y el Roku estén en la misma red y que la IP sea la correcta (Configuración → Red → Acerca de). |
 | Olvidé la contraseña | Repite la combinación del paso 1 y elige **Disable installer and restart**; después actívalo otra vez con una contraseña nueva. |
-| `Install Failure: No manifest` | Subiste un ZIP que contiene una carpeta. Usa el ZIP de la página de descargas tal cual, o crea el tuyo con `npm run build`. |
+| `Install Failure: No manifest` | Subiste un ZIP que contiene una carpeta. Usa el ZIP del enlace de descarga tal cual, o crea el tuyo con `npm run build`. |
 | La app se cierra al abrirla | Abre la consola de depuración (ver abajo) y busca el error. Abre un *issue* con el texto. |
 | Una página sale vacía | Ese sitio necesita JavaScript. Prueba con su versión móvil o "lite". |
 | Los acentos se ven mal en un sitio | El sitio no usa UTF-8. Es una limitación conocida. |
