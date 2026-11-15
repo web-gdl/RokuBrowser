@@ -1,0 +1,166 @@
+! RokuBrowser - lista de filtros integrada
+! Sintaxis (subconjunto de Adblock Plus / uBlock Origin):
+!   ||dominio.com^          bloquea enlaces y paginas de ese dominio y sus subdominios
+!   ||dominio.com/ruta      bloquea solo las direcciones que empiezan con esa ruta
+!   @@||dominio.com^        excepcion: nunca bloquear ese dominio
+!   ##.clase                oculta los elementos con esa clase CSS
+!   ###id                   oculta el elemento con ese id
+!   ! texto                 comentario
+! Las reglas con opciones ($third-party, $script...) se ignoran.
+! Ademas de esta lista, el navegador reconoce por si solo clases e ids como
+! "ad", "ads", "sponsored", "publicidad", "patrocinado", "cookie", "consent"...
+
+! ---------------------------------------------------------------- redes de anuncios
+||doubleclick.net^
+||googlesyndication.com^
+||googleadservices.com^
+||googletagservices.com^
+||adservice.google.com^
+||adnxs.com^
+||adsrvr.org^
+||amazon-adsystem.com^
+||criteo.com^
+||criteo.net^
+||taboola.com^
+||outbrain.com^
+||outbrainimg.com^
+||mgid.com^
+||revcontent.com^
+||zemanta.com^
+||zergnet.com^
+||media.net^
+||rubiconproject.com^
+||pubmatic.com^
+||openx.net^
+||casalemedia.com^
+||indexww.com^
+||smartadserver.com^
+||adform.net^
+||teads.tv^
+||sharethrough.com^
+||triplelift.com^
+||33across.com^
+||yieldmo.com^
+||adroll.com^
+||bidswitch.net^
+||contextweb.com^
+||sovrn.com^
+||lijit.com^
+||gumgum.com^
+||spotxchange.com^
+||springserve.com^
+||advertising.com^
+||adkernel.com^
+||nativo.com^
+||plista.com^
+||ligatus.com^
+||infolinks.com^
+||propellerads.com^
+||popads.net^
+||popcash.net^
+||adsterra.com^
+||exoclick.com^
+||juicyads.com^
+||trafficjunky.net^
+||clickadu.com^
+||hilltopads.net^
+||adcash.com^
+||ads.yahoo.com^
+||gemini.yahoo.com^
+||ads-twitter.com^
+||ads-api.twitter.com^
+||ads.linkedin.com^
+||ads.tiktok.com^
+||an.facebook.com^
+||unityads.unity3d.com^
+||applovin.com^
+||adcolony.com^
+||inmobi.com^
+||vungle.com^
+
+! -------------------------------------------------------- medicion y rastreadores
+||google-analytics.com^
+||googletagmanager.com^
+||analytics.google.com^
+||moatads.com^
+||doubleverify.com^
+||adsafeprotected.com^
+||scorecardresearch.com^
+||quantserve.com^
+||quantcount.com^
+||hotjar.com^
+||hotjar.io^
+||mouseflow.com^
+||fullstory.com^
+||crazyegg.com^
+||clarity.ms^
+||api.segment.io^
+||api.mixpanel.com^
+||api.amplitude.com^
+||chartbeat.com^
+||chartbeat.net^
+||nr-data.net^
+||omtrdc.net^
+||demdex.net^
+||everesttech.net^
+||2o7.net^
+||krxd.net^
+||bluekai.com^
+||exelator.com^
+||rlcdn.com^
+||agkn.com^
+||tapad.com^
+||mathtag.com^
+||eyeota.net^
+||crwdcntrl.net^
+||addthis.com^
+||sharethis.com^
+||statcounter.com^
+||histats.com^
+||mc.yandex.ru^
+||hm.baidu.com^
+||analytics.tiktok.com^
+||bat.bing.com^
+
+! ------------------------------------------------------ avisos de cookies (CMP)
+||cookielaw.org^
+||consensu.org^
+||consent.cookiebot.com^
+||privacy-center.org^
+||usercentrics.eu^
+
+! ------------------------------------------------- clics de anuncios en buscadores
+||duckduckgo.com/y.js
+||google.com/aclk
+||bing.com/aclk
+||facebook.com/tr
+||youtube.com/pagead
+
+! ------------------------------------------------ ocultar elementos por clase / id
+##.trc_related_container
+##.trc_rbox
+##.ob-widget
+##.ob-smartfeed-wrapper
+##.zergnet-widget
+##.mgbox
+##.mgline
+##.rc-wc
+##.advertorial
+##.adsense
+##.textads
+##.googleactiveviewelement
+##.pub_300x250
+##.pub_300x250m
+##.pub_728x90
+##.carbonads
+##.cc-window
+##.cc-banner
+##.fc-consent-root
+##.qc-cmp2-container
+##.osano-cm-window
+##.truste_overlay
+##.evidon-banner
+###carbonads
+###cybotcookiebotdialog
+###usercentrics-root
+###qc-cmp2-ui

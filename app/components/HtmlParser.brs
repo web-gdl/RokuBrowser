@@ -1,6 +1,7 @@
 ' Convierte HTML en una lista de lineas { t: texto, k: tipo, u: url }.
 ' Tipos: "t" texto, "h" encabezado, "l" enlace, "m" nota.
 ' Todas las funciones usan las tablas que setupParser() guarda en m.
+' El bloqueo de anuncios esta en AdFilter.brs (setupFilters activa o desactiva los filtros).
 
 sub setupParser()
     m.maxChars = 80        ' caracteres por linea
@@ -38,6 +39,8 @@ sub setupParser()
         kv = pair.Split("=")
         m.ent[kv[0]] = Val(kv[1], 10)
     end for
+
+    setupFilters(false, "")   ' sin filtros hasta que se carguen las listas
 end sub
 
 function newLine(text as string, kind as string, url as string) as object
@@ -51,8 +54,10 @@ function parseHtml(html as string, pageUrl as string, inlineLinks as boolean) as
         lines: [], buf: [], links: [], linkLen: 0, link: invalid,
         style: "t", prefix: "", title: "", inTitle: false,
         skip: "", inComment: false, base: parseBase(pageUrl),
-        showInline: inlineLinks, full: false
+        showInline: inlineLinks, full: false,
+        hide: "", hideDepth: 0, hideCount: 0   ' elemento de anuncio que se esta ocultando
     }
+    m.stats = { hidden: 0, links: 0, labels: 0, trackers: 0 }
 
     ' Cada trozo (menos el primero) empieza con una etiqueta: "nombre atributos>texto"
     pieces = html.Split("<")
@@ -74,6 +79,8 @@ function parseHtml(html as string, pageUrl as string, inlineLinks as boolean) as
                 st.inComment = false
                 addText(st, Mid(piece, p + 3))
             end if
+        else if st.hide <> ""
+            hidePiece(st, piece)
         else
             handlePiece(st, piece)
         end if
@@ -141,13 +148,20 @@ sub handlePiece(st as object, piece as string)
         return
     end if
 
+    if not closing and m.flt.cosmetic and m.hideable.DoesExist(name)
+        if isAdElement(tag)
+            startHide(st, name, tag)
+            return
+        end if
+    end if
+
     if name = "a"
         endLink(st)
         if not closing
             href = getAttr(m.reHref, tag)
             if href <> ""
                 u = resolveUrl(st.base, decodeEntities(href))
-                if u <> "" then st.link = { url: u, parts: [], alt: "", size: 0 }
+                if u <> "" then st.link = { url: u, parts: [], alt: "", size: 0, bufStart: st.buf.Count() }
             end if
         end if
     else if name = "title"
@@ -178,7 +192,7 @@ sub handlePiece(st as object, piece as string)
 end sub
 
 sub addText(st as object, s as string)
-    if s = "" then return
+    if s = "" or st.hide <> "" then return
     if st.inTitle
         st.title = st.title + s
         return
@@ -196,6 +210,22 @@ sub endLink(st as object)
     st.link = invalid
 
     text = cleanText(lk.parts.Join(""))
+
+    ' enlace a una red de anuncios o rastreo, o con texto "Publicidad": se quita junto con su texto
+    if m.flt.on
+        if isBlockedUrl(lk.url) or isAdLabel(text)
+            if isAdLabel(text)
+                m.stats.labels = m.stats.labels + 1
+            else
+                m.stats.links = m.stats.links + 1
+            end if
+            while st.buf.Count() > lk.bufStart
+                st.buf.Pop()
+            end while
+            return
+        end if
+    end if
+
     st.linkLen = st.linkLen + Len(text)   ' solo cuenta el texto que tambien esta en el parrafo
     if text = "" then text = cleanText(lk.alt)
     if text = "" then text = "[enlace] " + lk.url
@@ -222,6 +252,11 @@ sub flushBlock(st as object)
     st.buf = []
     st.links = []
     st.linkLen = 0
+
+    if text <> "" and m.flt.on and isAdLabel(text)
+        m.stats.labels = m.stats.labels + 1
+        text = ""
+    end if
 
     ' si el bloque es solo una lista de enlaces, no se repite su texto
     showText = text <> "" and (Len(text) - linkLen) > (3 * links.Count() + 2)
@@ -390,6 +425,8 @@ function resolveUrl(base as object, href as string) as string
             if m.reUrl.IsMatch(target) then u = target
         end if
     end if
+
+    if m.flt.on then u = cleanUrl(u)
     return u
 end function
 

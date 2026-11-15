@@ -1,6 +1,6 @@
 {
   "name": "rokubrowser",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Navegador web en modo lectura para televisores Roku (BrightScript + SceneGraph)",
   "private": true,
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "lint": "bsc --project bsconfig.json",
-    "test": "cd tools/test && brs test.brs ../../app/components/HtmlParser.brs --root .",
+    "test": "bash tools/test/run.sh",
     "build": "bash tools/build.sh",
     "images": "python3 tools/make_images.py"
   },

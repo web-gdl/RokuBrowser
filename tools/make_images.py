@@ -35,6 +35,7 @@ HEAD = "#FFD166"
 NOTE = "#9AA5B1"
 FOCUS = "#2D6CDF"
 PURPLE = "#662D91"
+GREEN = "#7EE787"
 
 
 def globe(d, cx, cy, r, w, col):
@@ -62,13 +63,16 @@ HINTS = ("OK: abrir enlace   |   Izq/Der: saltar entre enlaces   |   Rew/FF: pá
          "   Play: dirección   |   * : menú   |   Back: atrás")
 
 
-def screen(title, url, rows, focus_index, status=""):
+def screen(title, url, rows, focus_index, status="", shield="", shield_color=None):
     """Dibuja la escena principal a 1280x720 igual que MainScene.xml."""
     im = Image.new("RGB", (1280, 720), BG)
     d = ImageDraw.Draw(im)
     d.rectangle([0, 0, 1280, 98], fill=BAR)
     d.text((64, 28), title, font=font(B, 24), fill=WHITE)
     d.text((64, 62), url, font=font(R, 18), fill=GREY)
+    if shield:
+        f = font(R, 18)
+        d.text((1216 - d.textlength(shield, font=f), 34), shield, font=f, fill=shield_color or GREEN)
     if status:
         f = font(R, 18)
         d.text((1216 - d.textlength(status, font=f), 62), status, font=f, fill=HEAD)
@@ -103,7 +107,7 @@ HOME_ROWS = [
     ("m", "Izquierda / Derecha: saltar al enlace anterior o siguiente."),
     ("m", "Retroceder / Avanzar: subir o bajar una pantalla completa."),
     ("m", "Play: escribir una dirección o una búsqueda."),
-    ("m", "Asterisco (*): menú con inicio, recargar y favoritos."),
+    ("m", "Asterisco (*): menú con inicio, recargar, favoritos y bloqueo de anuncios."),
 ]
 
 # Pagina de ejemplo (contenido ficticio, solo para ilustrar el formato)
@@ -173,16 +177,107 @@ def keyboard_screen():
 
 def menu_screen():
     im = overlay(screen("Cómo funciona la televisión por internet",
-                        "https://ejemplo.org/articulos/tv-por-internet", PAGE_ROWS, 7))
-    box = (300, 130, 980, 590)
+                        "https://ejemplo.org/articulos/tv-por-internet", PAGE_ROWS, 7,
+                        shield="Bloqueados: 7  ·  Rastreo: 3"))
+    box = (300, 86, 980, 650)
     d = dialog_frame(im, box, "Menú")
     items = ["Ir a dirección o buscar", "Inicio", "Recargar página", "Guardar o quitar favorito",
-             "Ocultar enlaces dentro de párrafos", "Cerrar menú"]
+             "Bloqueo de anuncios y rastreadores", "Ocultar enlaces dentro de párrafos", "Cerrar menú"]
     for i, s in enumerate(items):
-        y = 196 + i * 62
-        rounded(d, (336, y, 944, y + 52), 8, fill=FOCUS if i == 3 else "#3A4250")
+        y = 160 + i * 66
+        rounded(d, (336, y, 944, y + 52), 8, fill=FOCUS if i == 4 else "#3A4250")
         d.text((360, y + 13), s, font=font(R, 22), fill=WHITE)
     return im.convert("RGB")
+
+
+def adblock_screen():
+    im = overlay(screen("Cómo funciona la televisión por internet",
+                        "https://ejemplo.org/articulos/tv-por-internet", PAGE_ROWS, 7,
+                        shield="Bloqueados: 7  ·  Rastreo: 3"))
+    box = (170, 60, 1110, 660)
+    d = dialog_frame(im, box, "Bloqueo de anuncios y rastreadores")
+    msg = [
+        "Estado: activado.",
+        "En esta página: 5 elementos de anuncio, patrocinio o cookies ocultos;",
+        "1 enlace de anuncios o rastreo quitado; 1 etiqueta de publicidad",
+        "quitada; 3 enlaces limpiados de rastreo.",
+        "Reglas cargadas: 3,689.",
+        "Lista de Peter Lowe: 3,544 dominios, actualizada el 15/11/2026.",
+    ]
+    f = font(R, 20)
+    y = 134
+    for i, line in enumerate(msg):
+        if i in (1, 4, 5):
+            y += 12
+        d.text((206, y), line, font=f, fill="#C9D1D9")
+        y += 28
+    buttons = ["Desactivar bloqueo en todo el navegador", "Pausar bloqueo en ejemplo.org",
+               "Actualizar lista de filtros", "Cerrar"]
+    for i, b in enumerate(buttons):
+        by = 380 + i * 64
+        rounded(d, (206, by, 1074, by + 52), 8, fill=FOCUS if i == 1 else "#3A4250")
+        d.text((230, by + 13), b, font=font(R, 22), fill=WHITE)
+    return im.convert("RGB")
+
+
+# Misma pagina sin bloqueo (con anuncios) y con bloqueo
+ADS_ROWS = [
+    ("t", "Usamos cookies para mejorar tu experiencia. Al continuar, aceptas."),
+    ("l", "» Aceptar todo"),
+    ("l", "» Inicio"),
+    ("l", "» Artículos"),
+    ("h", "Cómo funciona la televisión por internet"),
+    ("t", "Publicidad"),
+    ("l", "» ¡Compra ya! 70% de descuento en televisores"),
+    ("t", "La televisión por internet envía el video en pequeños fragmentos que el"),
+    ("t", "reproductor descarga uno tras otro."),
+    ("l", "» Qué es el streaming adaptativo"),
+    ("h", "Contenido patrocinado"),
+    ("l", "» El truco que los bancos no quieren que conozcas"),
+    ("l", "» Médicos sorprendidos por este remedio casero"),
+    ("h", "Ventajas"),
+    ("t", "• La calidad se ajusta sola a la velocidad de la conexión."),
+    ("l", "» Guía de formatos de video"),
+]
+CLEAN_ROWS = [
+    ("l", "» Inicio"),
+    ("l", "» Artículos"),
+    ("h", "Cómo funciona la televisión por internet"),
+    ("t", "La televisión por internet envía el video en pequeños fragmentos que el"),
+    ("t", "reproductor descarga uno tras otro."),
+    ("l", "» Qué es el streaming adaptativo"),
+    ("h", "Ventajas"),
+    ("t", "• La calidad se ajusta sola a la velocidad de la conexión."),
+    ("t", "• No hace falta descargar el programa completo antes de verlo."),
+    ("t", "• El mismo contenido sirve para teléfonos, computadoras y televisores."),
+    ("h", "Para saber más"),
+    ("l", "» Guía de formatos de video"),
+    ("l", "» Preguntas frecuentes"),
+]
+
+
+def before_after():
+    url = "https://ejemplo.org/articulos/tv-por-internet"
+    title = "Cómo funciona la televisión por internet"
+    before = screen(title, url, ADS_ROWS, -1, shield="Bloqueo: apagado", shield_color=GREY)
+    after = screen(title, url, CLEAN_ROWS, -1, shield="Bloqueados: 7  ·  Rastreo: 3")
+    # marcar en rojo lo que el filtro quita
+    d = ImageDraw.Draw(before)
+    for i in (0, 1, 5, 6, 10, 11, 12):
+        y = 104 + i * 34
+        d.rectangle([52, y + 1, 1228, y + 32], outline="#F85149", width=3)
+    W = 1500
+    out = Image.new("RGB", (W, 520), "#FFFFFF")
+    od = ImageDraw.Draw(out)
+    for k, (im, label, col) in enumerate([(before, "Sin bloqueo", "#CF222E"), (after, "Con bloqueo", "#1A7F37")]):
+        small = im.resize((704, 396), Image.LANCZOS)
+        x = 30 + k * 736
+        od.rounded_rectangle((x - 8, 62, x + 712, 466), radius=12, fill="#0B0B0D")
+        out.paste(small, (x, 66))
+        od.text((x, 16), label, font=font(B, 28), fill=col)
+    center_text(od, 478, "Simulación: lo marcado en rojo (cookies, publicidad, enlaces de anuncios y patrocinados) desaparece",
+                font(R, 19), "#57606A", W)
+    out.save(os.path.join(OUT, "antes-despues.png"))
 
 
 def framed(im, path, caption):
@@ -210,7 +305,7 @@ def banner():
     d.text((410, 110), "RokuBrowser", font=font(B, 76), fill=WHITE)
     d.text((414, 205), "Navegador web en modo lectura para televisores Roku",
            font=font(R, 28), fill=GREY)
-    tags = ["BrightScript", "SceneGraph", "Sideload", "Español"]
+    tags = ["BrightScript", "SceneGraph", "Bloqueo de anuncios", "Español"]
     x = 414
     for t in tags:
         f = font(B, 20)
@@ -343,7 +438,7 @@ def install_steps():
 
 
 def architecture():
-    W, H = 1400, 720
+    W, H = 1400, 900
     im = Image.new("RGB", (W, H), "#FFFFFF")
     d = ImageDraw.Draw(im)
     center_text(d, 24, "Arquitectura de la app", font(B, 36), "#1F2328", W)
@@ -379,6 +474,11 @@ def architecture():
     box(1020, 440, 340, 190, "HtmlParser.brs", ["HTML → líneas {t, k, u}", "Ignora script/style",
                                                 "URLs relativas, entidades", "Ajuste a 80 caracteres"],
         "#EAF7EE", "#2DA44E")
+    box(1020, 700, 340, 180, "AdFilter.brs", ["Oculta anuncios y patrocinios", "Quita enlaces de anuncios",
+                                              "Limpia parámetros de rastreo", "Lee filtros.txt + Peter Lowe"],
+        "#FFF1F0", "#CF222E")
+    box(420, 720, 520, 140, "Registro del Roku", ["Favoritos, ajustes del bloqueo,", "sitios pausados"],
+        "#F6F8FA", "#8C959F")
     box(40, 460, 300, 150, "Internet", ["Sitios web", "DuckDuckGo HTML", "(búsquedas)"], "#F6F8FA", "#8C959F")
 
     arrow(340, 175, 420, 190)
@@ -387,6 +487,8 @@ def architecture():
     arrow(740, 420, 740, 330, "content + result", 752, 384)
     arrow(940, 540, 1020, 540, "analiza", 948, 508)
     arrow(420, 535, 340, 535, "GET", 360, 500)
+    arrow(1190, 630, 1190, 700, "filtra", 1202, 652)
+    arrow(680, 670, 680, 720, "lee / guarda", 692, 682)
     im.save(os.path.join(OUT, "arquitectura.png"))
 
 
@@ -421,16 +523,20 @@ def app_icons():
 if __name__ == "__main__":
     icon_path = app_icons()
     banner()
-    framed(screen("Inicio", "", HOME_ROWS, 4), os.path.join(OUT, "pantalla-inicio.png"),
+    framed(screen("Inicio", "", HOME_ROWS, 4, shield="Bloqueo: activo"), os.path.join(OUT, "pantalla-inicio.png"),
            "Simulación: pantalla de inicio con favoritos")
     framed(screen("Cómo funciona la televisión por internet",
-                  "https://ejemplo.org/articulos/tv-por-internet", PAGE_ROWS, 7, "Guardado en favoritos"),
+                  "https://ejemplo.org/articulos/tv-por-internet", PAGE_ROWS, 7, "Guardado en favoritos",
+                  shield="Bloqueados: 7  ·  Rastreo: 3"),
            os.path.join(OUT, "pantalla-pagina.png"),
            "Simulación: una página en modo lectura (el enlace enfocado se resalta)")
     framed(keyboard_screen(), os.path.join(OUT, "pantalla-teclado.png"),
            "Simulación: teclado para escribir dirección o búsqueda (botón Play)")
     framed(menu_screen(), os.path.join(OUT, "pantalla-menu.png"),
            "Simulación: menú de opciones (botón *)")
+    framed(adblock_screen(), os.path.join(OUT, "pantalla-bloqueo.png"),
+           "Simulación: submenú de bloqueo de anuncios (botón * → Bloqueo de anuncios)")
+    before_after()
     remote()
     install_steps()
     architecture()

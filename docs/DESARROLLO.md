@@ -20,7 +20,7 @@ npm install
 | Comando | Qué hace |
 |---|---|
 | `npm run lint` | Valida todo el BrightScript y los XML con BrighterScript |
-| `npm test` | Ejecuta `tools/test/test.brs` con el intérprete `brs`: analiza `sample.html` e imprime las líneas |
+| `npm test` | Ejecuta las 32 pruebas de `tools/test/test.brs` con el intérprete `brs` (analizador y bloqueo) y falla si alguna no pasa |
 | `npm run build` | Genera `download/NavegadorWebRoku.zip` con el contenido de `app/` (este archivo se sube al repositorio) |
 | `npm run images` | Regenera iconos, splash e imágenes de la documentación |
 
@@ -64,11 +64,18 @@ No subas ese archivo con tu contraseña: `.vscode/` está en `.gitignore`.
 - **Textos de la interfaz en español**, con acentos (los archivos están en UTF-8).
 - Cada cambio debe pasar `npm run lint` y `npm test` sin errores.
 
-## Probar el analizador
+## Pruebas
 
-`tools/test/sample.html` contiene casos difíciles: scripts con `<` y `>`, comentarios, entidades, enlaces relativos, tarjetas, enlaces `javascript:` y redirecciones de DuckDuckGo. Al cambiar `HtmlParser.brs`, ejecuta `npm test` y revisa que la salida siga teniendo sentido.
+- `tools/test/sample.html`: casos difíciles del analizador (scripts con `<` y `>`, comentarios, entidades, enlaces relativos, tarjetas, enlaces `javascript:`, redirecciones de DuckDuckGo).
+- `tools/test/anuncios.html`: una noticia con anuncios anidados, `adsbygoogle`, Taboola, aviso de cookies, `<li>` patrocinado sin cerrar, enlaces con `utm_*` y `fbclid`, redirectores de Google y Facebook, clics de anuncios de Bing y DuckDuckGo, y clases legítimas que **no** deben ocultarse (`header`, `badge`, `download`, `shadow`).
 
-Para probar una página real, guárdala como `tools/test/sample.html` y vuelve a ejecutar la prueba.
+`npm test` imprime las líneas resultantes y termina con `PRUEBAS: N correctas, M fallidas`. Cada caso nuevo se agrega con `check("descripción", condición)` en `test.brs`.
+
+Para revisar una página real, guarda su HTML en `tools/test/` y analízala desde `test.brs`.
+
+## Editar la lista de filtros
+
+Las reglas están en `app/filters/filtros.txt` (sintaxis en [BLOQUEO.md](BLOQUEO.md#sintaxis-de-filtrostxt)). Después de editarla, ejecuta `npm test` para comprobar que no se oculta contenido legítimo y `npm run build` para generar el ZIP.
 
 ## Publicar una versión
 
@@ -86,7 +93,7 @@ Para probar una página real, guárdala como `tools/test/sample.html` y vuelve a
 
 ## Ideas para siguientes versiones
 
-- Mostrar imágenes con nodos `Poster`.
+- Mostrar imágenes con nodos `Poster` (aplicando el bloqueo también a las imágenes de anuncios).
 - Reproducir enlaces `.mp4` y `.m3u8` con el nodo `Video`.
 - Formularios de búsqueda simples (método GET).
 - Detectar la codificación (`charset`) de páginas que no usan UTF-8.

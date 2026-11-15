@@ -11,11 +11,13 @@ sub init()
     m.status = m.top.findNode("status")
     m.loadingGroup = m.top.findNode("loading")
     m.statusTimer = m.top.findNode("statusTimer")
+    m.shield = m.top.findNode("shield")
 
     m.history = []        ' paginas anteriores (para Back)
     m.current = invalid   ' { url, title, content, links, index }
     m.task = invalid
     m.bmTask = invalid
+    m.setTask = invalid
     m.dialog = invalid
     m.loading = false
     m.pendingPush = false
@@ -81,7 +83,10 @@ sub onPageLoaded(event as object)
         trimHistory()
     end if
 
-    m.current = { url: res.url, title: res.title, content: content, links: res.links, index: 0 }
+    m.current = {
+        url: res.url, title: res.title, content: content, links: res.links, index: 0,
+        ad: { adblock: res.adblock, site: res.site, siteAllowed: res.siteAllowed, stats: res.stats, rules: res.rules, remote: res.remote, remoteLoaded: res.remoteLoaded }
+    }
     showCurrent(m.pendingIndex)
 end sub
 
@@ -104,11 +109,39 @@ sub showCurrent(index as integer)
         m.urlLabel.text = m.current.url
     end if
 
+    updateShield()
     m.list.content = m.current.content
     count = m.current.content.getChildCount()
     if index > 0 and index < count then m.list.jumpToItem = index
     if m.dialog = invalid then m.list.setFocus(true)
 end sub
+
+' Texto del encabezado con el estado del bloqueo
+sub updateShield()
+    ad = m.current.ad
+    if ad = invalid or ad.adblock = invalid
+        m.shield.text = ""
+    else if not ad.adblock
+        m.shield.text = "Bloqueo: apagado"
+        m.shield.color = "0x8FA3B8FF"
+    else if ad.siteAllowed
+        m.shield.text = "Bloqueo: pausado en este sitio"
+        m.shield.color = "0xFFD166FF"
+    else if not isWebPage()
+        m.shield.text = "Bloqueo: activo"
+        m.shield.color = "0x7EE787FF"
+    else
+        st = ad.stats
+        text = "Bloqueados: " + (st.hidden + st.links + st.labels).ToStr()
+        if st.trackers > 0 then text = text + "  ·  Rastreo: " + st.trackers.ToStr()
+        m.shield.text = text
+        m.shield.color = "0x7EE787FF"
+    end if
+end sub
+
+function isWebPage() as boolean
+    return m.current <> invalid and Left(m.current.url, 4) <> "app:" and m.current.title <> "Página bloqueada"
+end function
 
 function focusedIndex() as integer
     i = m.list.itemFocused
@@ -230,7 +263,7 @@ sub showMenu()
     else
         inlineLabel = "Mostrar enlaces dentro de párrafos"
     end if
-    d.buttons = ["Ir a dirección o buscar", "Inicio", "Recargar página", "Guardar o quitar favorito", inlineLabel, "Cerrar menú"]
+    d.buttons = ["Ir a dirección o buscar", "Inicio", "Recargar página", "Guardar o quitar favorito", "Bloqueo de anuncios y rastreadores", inlineLabel, "Cerrar menú"]
     d.observeField("buttonSelected", "onMenuButton")
     openDialog(d)
 end sub
@@ -239,6 +272,9 @@ sub onMenuButton(event as object)
     index = event.getData()
     if index = 0
         showKeyboard()   ' reemplaza al menu
+        return
+    else if index = 4
+        showAdMenu()     ' reemplaza al menu
         return
     end if
 
@@ -249,10 +285,93 @@ sub onMenuButton(event as object)
         reload()
     else if index = 3
         toggleBookmark()
-    else if index = 4
+    else if index = 5
         m.showInline = not m.showInline
         reload()
     end if
+end sub
+
+' --------------------------------------------------------- bloqueo de anuncios
+
+sub showAdMenu()
+    if m.current = invalid or m.current.ad = invalid then return
+    ad = m.current.ad
+    msg = []
+
+    if not ad.adblock
+        msg.Push("Estado: desactivado en todo el navegador.")
+    else if ad.siteAllowed
+        msg.Push("Estado: pausado en " + ad.site + ".")
+    else
+        msg.Push("Estado: activado.")
+        if isWebPage()
+            st = ad.stats
+            msg.Push("En esta página: " + st.hidden.ToStr() + " elementos de anuncio, patrocinio o cookies ocultos; " + st.links.ToStr() + " enlaces de anuncios o rastreo quitados; " + st.labels.ToStr() + " etiquetas de publicidad quitadas; " + st.trackers.ToStr() + " enlaces limpiados de rastreo.")
+        end if
+        if ad.rules > 0 then msg.Push("Reglas cargadas: " + ad.rules.ToStr() + ".")
+    end if
+
+    if ad.remote = invalid
+        msg.Push("Lista de Peter Lowe: no descargada. Usa Actualizar para sumar unos 3,500 dominios.")
+    else if ad.adblock and not ad.siteAllowed and not ad.remoteLoaded
+        msg.Push("Lista de Peter Lowe: el Roku la borró para liberar espacio. Vuelve a actualizarla.")
+    else
+        msg.Push("Lista de Peter Lowe: " + ad.remote.count.ToStr() + " dominios, actualizada el " + ad.remote.date + ".")
+    end if
+
+    if ad.adblock
+        globalLabel = "Desactivar bloqueo en todo el navegador"
+    else
+        globalLabel = "Activar bloqueo de anuncios"
+    end if
+    if not isWebPage()
+        siteLabel = "Pausar en un sitio (abre primero una página web)"
+    else if ad.siteAllowed
+        siteLabel = "Reactivar bloqueo en " + ad.site
+    else
+        siteLabel = "Pausar bloqueo en " + ad.site
+    end if
+
+    d = CreateObject("roSGNode", "StandardMessageDialog")
+    d.title = "Bloqueo de anuncios y rastreadores"
+    d.message = msg
+    d.buttons = [globalLabel, siteLabel, "Actualizar lista de filtros", "Cerrar"]
+    d.observeField("buttonSelected", "onAdMenuButton")
+    openDialog(d)
+end sub
+
+sub onAdMenuButton(event as object)
+    index = event.getData()
+    closeDialog()
+    if index = 0
+        runSetting("adblock", "")
+    else if index = 1
+        if isWebPage()
+            runSetting("site", m.current.ad.site)
+        else
+            toast("Abre primero una página web")
+        end if
+    else if index = 2
+        toast("Descargando lista de filtros...")
+        runSetting("filters", "")
+    end if
+end sub
+
+sub runSetting(action as string, value as string)
+    if m.setTask <> invalid then return
+    t = CreateObject("roSGNode", "BrowserTask")
+    t.action = action
+    t.input = value
+    t.observeField("result", "onSettingDone")
+    m.setTask = t
+    t.control = "RUN"
+end sub
+
+sub onSettingDone(event as object)
+    res = event.getData()
+    m.setTask = invalid
+    if res <> invalid and res.message <> invalid then toast(res.message)
+    reload()   ' aplicar el cambio a la página actual
 end sub
 
 ' ----------------------------------------------------------------- favoritos

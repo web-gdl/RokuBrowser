@@ -71,10 +71,25 @@ Con el botón `*`:
 | Inicio | Vuelve a la pantalla de inicio (puedes regresar con Back) |
 | Recargar página | Descarga la página otra vez y conserva la posición |
 | Guardar o quitar favorito | Agrega la página actual a favoritos, o la quita si ya estaba |
+| Bloqueo de anuncios y rastreadores | Abre el submenú del bloqueo (ver abajo) |
 | Mostrar / ocultar enlaces dentro de párrafos | Cambia cómo se muestran los enlaces y recarga |
 | Cerrar menú | Cierra el menú (también con Back) |
 
 Al guardar o quitar un favorito, aparece un aviso en amarillo arriba a la derecha.
+
+## Bloqueo de anuncios
+
+![Simulación del submenú de bloqueo](images/pantalla-bloqueo.png)
+
+El bloqueo viene activado. Arriba a la derecha verás cuántos elementos se quitaron de la página (`Bloqueados: 7 · Rastreo: 3`). Desde `*` → **Bloqueo de anuncios y rastreadores** puedes:
+
+- Ver el detalle de lo bloqueado en la página.
+- Desactivarlo en todo el navegador, o **pausarlo solo en el sitio actual** si una página se ve incompleta.
+- Descargar la lista de Peter Lowe para bloquear más dominios.
+
+Si abres un enlace de una red de anuncios, aparece **Página bloqueada** con la opción *Abrir de todos modos*.
+
+Todos los detalles en [Bloqueo de anuncios](BLOQUEO.md).
 
 ## Historial
 
